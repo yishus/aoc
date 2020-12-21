@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::fs;
 
-fn main() {
-    let contents = fs::read_to_string("./input.txt")
+pub fn a() {
+    let contents = fs::read_to_string("input/day_2.txt")
         .expect("Something went wrong reading the file");
 
     let lines: Vec<&str> = contents
@@ -11,7 +11,7 @@ fn main() {
 
     let mut count = 0;
     for line in lines {
-        if password_valid(line) {
+        if password_valid_count(line) {
             count += 1;
         }
     }
@@ -19,7 +19,25 @@ fn main() {
     println!("{}", count);
 }
 
-fn password_valid(str: &str) -> bool {
+pub fn b() {
+    let contents = fs::read_to_string("input/day_2.txt")
+        .expect("Something went wrong reading the file");
+
+    let lines: Vec<&str> = contents
+        .split('\n')
+        .collect();
+
+    let mut count = 0;
+    for line in lines {
+        if password_valid_pos(line) {
+            count += 1;
+        }
+    }
+
+    println!("{}", count);
+}
+
+fn password_valid_count(str: &str) -> bool {
     let parts: Vec<&str> = str.split(": ").collect();
     let condition_parts: Vec<&str> = parts[0].split(' ').collect();
     let range: Vec<usize> = condition_parts[0]
@@ -38,6 +56,19 @@ fn password_valid(str: &str) -> bool {
         },
         None => { return false; }
     }
+}
+
+fn password_valid_pos(str: &str) -> bool {
+    let parts: Vec<&str> = str.split(": ").collect();
+    let condition_parts: Vec<&str> = parts[0].split(' ').collect();
+    let positions: Vec<usize> = condition_parts[0]
+        .split('-')
+        .map(|s| s.parse().expect("parse error"))
+        .collect();
+
+    let at_first_position = &parts[1][positions[0] - 1..positions[0]] == condition_parts[1];
+    let at_second_position = &parts[1][positions[1] - 1..positions[1]] == condition_parts[1];
+    return (at_first_position || at_second_position)  && !(at_first_position && at_second_position);
 }
 
 fn count_password_letters(password: &str) -> HashMap<&str, usize> {
